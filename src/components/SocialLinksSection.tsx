@@ -148,7 +148,7 @@ export default function SocialLinksSection() {
             </span>
           </h2>
           <p className="text-slate-400 text-lg max-w-2xl mx-auto">
-            Follow my journey, see my work, and let's connect on your favorite platform
+            Follow my journey, see my work, and let&apos;s connect on your favorite platform
           </p>
         </motion.div>
 
@@ -197,7 +197,7 @@ export default function SocialLinksSection() {
           className="text-center mt-16"
         >
           <p className="text-slate-300 text-lg mb-6">
-            Let's collaborate and create something amazing together!
+            Let&apos;s collaborate and create something amazing together!
           </p>
           <motion.button
             whileHover={{ scale: 1.05, boxShadow: "0 15px 30px rgba(251, 191, 36, 0.3)" }}

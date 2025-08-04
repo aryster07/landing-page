@@ -640,7 +640,7 @@ export default function HeroSection() {
                     isDarkMode ? 'text-neutral-300' : 'text-gray-700'
                   }`}>
                     <p className="bio-text">
-                      Hello, I'm Aryan - a mountain dweller with an intense passion for <span className={`font-normal transition-colors duration-500 ${
+                      Hello, I&apos;m Aryan - a mountain dweller with an intense passion for <span className={`font-normal transition-colors duration-500 ${
                         isDarkMode ? 'text-neutral-100' : 'text-blue-600'
                       }`}>technology</span>,{" "}
                       <span className={`font-normal transition-colors duration-500 ${
@@ -1032,7 +1032,7 @@ export default function HeroSection() {
                   isDarkMode ? 'text-neutral-300' : 'text-gray-600'
                 }`}>
                   <p className="bio-text font-light leading-relaxed">
-                    Hello, I'm Aryan - a mountain dweller with an intense passion for{" "}
+                    Hello, I&apos;m Aryan - a mountain dweller with an intense passion for{" "}
                     <span className={`font-medium transition-colors duration-500 ${
                       isDarkMode ? 'text-neutral-100' : 'text-gray-800'
                     }`}>technology</span> and{" "}
