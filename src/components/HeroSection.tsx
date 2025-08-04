@@ -1146,7 +1146,7 @@ export default function HeroSection() {
                           className="w-full h-full cursor-pointer"
                         >
                           <a 
-                            href="https://7framesaryan.vercel.app/#home"
+                            href="https://7framesaryan-photography.vercel.app"
                             target="_blank"
                             rel="noopener noreferrer"
                             className="block w-full h-full"
