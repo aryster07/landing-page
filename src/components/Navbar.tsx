@@ -46,9 +46,8 @@ export default function Navbar() {
         <div className="flex items-center justify-center h-14 md:h-16">
           {/* Simple Logo - Centered */}
           <Link href="#home" className="group">
-            <h1 className="text-lg md:text-xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent group-hover:from-blue-300 group-hover:to-purple-300 transition-all duration-300">
-              7frames_aryan
-            </h1>
+           
+            
           </Link>
         </div>
       </div>

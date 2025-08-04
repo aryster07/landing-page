@@ -22,6 +22,8 @@
 
 html {
   scroll-behavior: smooth;
+  /* Prevent overscrolling on mobile */
+  overscroll-behavior: none;
 }
 
 body {
@@ -31,6 +33,10 @@ body {
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  /* Prevent overscrolling on mobile */
+  overscroll-behavior: none;
+  /* Prevent pull-to-refresh and elastic scrolling */
+  overscroll-behavior-y: none;
 }
 
 /* Custom scrollbar */
@@ -55,6 +61,31 @@ body {
 ::selection {
   background-color: #3b82f6;
   color: white;
+}
+
+/* Touch optimization for mobile devices */
+.touch-manipulation {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Mobile overscroll prevention */
+@media (max-width: 768px) {
+  html, body {
+    overscroll-behavior: none;
+    overscroll-behavior-y: none;
+  }
+  
+  /* Additional mobile-specific touches */
+  * {
+    overscroll-behavior: none;
+  }
+}
+
+/* Ensure buttons are easily tappable */
+a, button {
+  min-height: 44px;
+  min-width: 44px;
 }
 
 /* Custom animations */
