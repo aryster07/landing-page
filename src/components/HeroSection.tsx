@@ -328,7 +328,7 @@ export default function HeroSection() {
               <div className="grid grid-cols-2 gap-4">
                 {/* UI/UX Designer Card */}
                 <a 
-                  href="https://7framesaryan-design.vercel.app/"
+                  href="https://aryandesign.vercel.app/"
                   target="_blank"
                   rel="noopener noreferrer"
                   className={`flex flex-col items-center p-6 rounded-3xl border cursor-pointer group text-center transition-all duration-500 backdrop-blur-sm ${
@@ -367,7 +367,7 @@ export default function HeroSection() {
 
                 {/* Photographer Card */}
                 <a 
-                  href="https://7framesaryan-photography.vercel.app/"
+                  href="https://aryanphotography.vercel.app/"
                   target="_blank"
                   rel="noopener noreferrer"
                   className={`flex flex-col items-center p-6 rounded-3xl border cursor-pointer group text-center transition-all duration-500 backdrop-blur-sm ${
@@ -871,7 +871,7 @@ export default function HeroSection() {
                   
                   {/* UI/UX Designer Card - Enhanced */}
                   <a 
-                    href="https://7framesaryan-design.vercel.app/"
+                    href="https://aryandesign.vercel.app/"
                     target="_blank"
                     rel="noopener noreferrer"
                     className={`relative group p-8 lg:p-10 rounded-3xl border transition-all duration-500 cursor-pointer overflow-hidden block ${
@@ -925,7 +925,7 @@ export default function HeroSection() {
 
                   {/* Photographer Card - Enhanced */}
                   <a 
-                    href="https://7framesaryan-photography.vercel.app"
+                    href="https://aryanphotography.vercel.app/"
                     target="_blank"
                     rel="noopener noreferrer"
                     className={`relative group p-8 lg:p-10 rounded-3xl border transition-all duration-500 cursor-pointer overflow-hidden block ${

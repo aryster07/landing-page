@@ -294,8 +294,8 @@ CSS Variables (globals.css):
 
 **🌐 Live Website:** https://7frames-aryan-portfolio.vercel.app  
 **💻 Source Code:** https://github.com/aryster07/landing-page  
-**🎨 Design Portfolio:** https://7framesaryan-design.vercel.app  
-**📸 Photography Portfolio:** https://7framesaryan-photography.vercel.app  
+**🎨 Design Portfolio:** https://aryandesign.vercel.app/  
+**📸 Photography Portfolio:** https://aryanphotography.vercel.app/  
 
 **Connect:**
 - **LinkedIn:** https://www.linkedin.com/in/aryanrana007/
@@ -462,7 +462,7 @@ Landing (100%) → Card Click (89%) → Portfolio View (67%) → Contact (23%)
 
 *Case Study compiled by: Aryan Rana (@7frames_aryan)*  
 *GitHub: https://github.com/aryster07/landing-page*  
-*Portfolio: Designer - https://7framesaryan-design.vercel.app/*  
-*Portfolio: Photographer - https://7framesaryan-photography.vercel.app*  
+*Portfolio: Designer - https://aryandesign.vercel.app/*  
+*Portfolio: Photographer - https://aryanphotography.vercel.app/*  
 *Last Updated: August 12, 2025*  
 *Version: 1.0*
