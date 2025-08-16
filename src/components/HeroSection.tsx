@@ -872,6 +872,8 @@ export default function HeroSection() {
                   {/* UI/UX Designer Card - Enhanced */}
                   <a 
                     href="https://7framesaryan-design.vercel.app/"
+                    target="_blank"
+                    rel="noopener noreferrer"
                     className={`relative group p-8 lg:p-10 rounded-3xl border transition-all duration-500 cursor-pointer overflow-hidden block ${
                       isDarkMode 
                         ? 'bg-neutral-900/40 border-neutral-800/50 hover:bg-neutral-900/60 hover:border-neutral-700' 
