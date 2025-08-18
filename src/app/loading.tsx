@@ -12,16 +12,14 @@ export default function Loading() {
             opacity: [0.7, 1, 0.7],
           }}
           transition={{
-            duration: 2,
-            repeat: Infinity,
-            ease: "easeInOut",
-          }}
-          className="text-4xl font-bold bg-gradient-to-r from-yellow-400 to-yellow-600 bg-clip-text text-transparent mb-4"
-        >
-          7frames_aryan
-        </motion.div>
-        
-        <div className="flex space-x-2">
+          duration: 2,
+          repeat: Infinity,
+          ease: "easeInOut",
+        }}
+        className="text-4xl font-bold bg-gradient-to-r from-yellow-400 to-yellow-600 bg-clip-text text-transparent mb-4"
+      >
+        Aryan Rana
+      </motion.div>        <div className="flex space-x-2">
           {[0, 1, 2].map((i) => (
             <motion.div
               key={i}

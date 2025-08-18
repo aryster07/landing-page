@@ -1,4 +1,4 @@
-# 7frames_aryan - Portfolio Website
+# Aryan Rana - Creative Professional Portfolio
 
 A high-performance Next.js portfolio website showcasing creative work with modern animations and beautiful UI/UX design.
 

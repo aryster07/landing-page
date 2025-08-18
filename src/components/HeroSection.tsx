@@ -241,7 +241,7 @@ export default function HeroSection() {
                     ? 'from-neutral-100 via-amber-200 to-neutral-300' 
                     : 'from-amber-500 via-yellow-500 to-amber-600'
                 }`}>
-                  7frames_aryan
+                  Aryan Rana
                 </span>
               </h1>
               
@@ -646,7 +646,7 @@ export default function HeroSection() {
                       ? 'from-neutral-100 via-amber-200 to-neutral-300' 
                       : 'from-amber-500 via-yellow-500 to-amber-600'
                   }`}>
-                    7frames_aryan
+                    Aryan Rana
                   </span>
                 </h1>
 

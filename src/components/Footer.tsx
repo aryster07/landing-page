@@ -20,10 +20,10 @@ export default function Footer() {
           {/* Logo & Tagline */}
           <div className="text-center md:text-left">
             <h3 className="text-2xl font-bold bg-gradient-to-r from-yellow-400 to-yellow-600 bg-clip-text text-transparent mb-2">
-              7frames_aryan
+              Aryan Rana
             </h3>
             <p className="text-gray-400">
-              Creating visual stories that inspire
+              Creating exceptional digital experiences
             </p>
           </div>
 
