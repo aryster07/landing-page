@@ -295,7 +295,7 @@ CSS Variables (globals.css):
 **🌐 Live Website:** https://7frames-aryan-portfolio.vercel.app  
 **💻 Source Code:** https://github.com/aryster07/landing-page  
 **🎨 Design Portfolio:** https://aryandesign.vercel.app/  
-**📸 Photography Portfolio:** https://aryanphotography.vercel.app/  
+**📸 Photography Work:** https://aryanphotography.vercel.app/  
 
 **Connect:**
 - **LinkedIn:** https://www.linkedin.com/in/aryanrana007/

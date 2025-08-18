@@ -11,11 +11,11 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "7frames_aryan - Creative Professional Portfolio",
-  description: "Passionate designer and photographer from Himachal Pradesh. Specializing in UI/UX design and visual storytelling with an unwavering love for art and perfection.",
-  keywords: ["portfolio", "designer", "photographer", "UI/UX", "Himachal Pradesh", "creative", "visual storytelling"],
-  authors: [{ name: "Aryan", url: "https://7framesaryan.com" }],
-  creator: "Aryan",
+  title: "Aryan Rana - Creative Professional Portfolio",
+  description: "Creative professional from Himachal Pradesh specializing in UI/UX design, web development, and digital solutions. Passionate about crafting exceptional user experiences and visual storytelling.",
+  keywords: ["portfolio", "designer", "developer", "UI/UX", "web development", "Himachal Pradesh", "creative", "digital solutions", "user experience"],
+  authors: [{ name: "Aryan Rana", url: "https://aryanrana.com" }],
+  creator: "Aryan Rana",
   icons: {
     icon: [
       { url: '/images/profile/20250206_051456000_iOS.jpg', sizes: '32x32', type: 'image/jpeg' },
@@ -29,10 +29,10 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "en_US",
-    url: "https://7framesaryan.com",
-    title: "7frames_aryan - Creative Professional Portfolio",
-    description: "Passionate designer and photographer from Himachal Pradesh. Specializing in UI/UX design and visual storytelling.",
-    siteName: "7frames_aryan Portfolio",
+    url: "https://aryanrana.com",
+    title: "Aryan Rana - Creative Professional Portfolio",
+    description: "Creative professional from Himachal Pradesh specializing in UI/UX design, web development, and digital solutions.",
+    siteName: "Aryan Rana Portfolio",
     images: [
       {
         url: '/images/profile/20250206_051456000_iOS.jpg',
@@ -44,8 +44,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "7frames_aryan - Creative Professional Portfolio",
-    description: "Passionate designer and photographer from Himachal Pradesh. Specializing in UI/UX design and visual storytelling.",
+    title: "Aryan Rana - Creative Professional Portfolio",
+    description: "Creative professional from Himachal Pradesh specializing in UI/UX design, web development, and digital solutions.",
     images: ['/images/profile/20250206_051456000_iOS.jpg'],
   },
   robots: {
