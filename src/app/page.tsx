@@ -86,29 +86,47 @@ export default function Portfolio() {
       <div className={`fixed inset-0 pointer-events-none transition-opacity duration-1000 ${mode === 'designer' ? 'opacity-100' : 'opacity-0'} grid-bg`} />
 
       {/* --- NAVIGATION TOGGLE --- */}
-      <nav className="fixed top-8 left-1/2 -translate-x-1/2 z-50 pointer-events-none">
-        <div className="pointer-events-auto relative bg-white/5 backdrop-blur-2xl rounded-full p-2 shadow-2xl border border-white/10 overflow-hidden w-[280px]">
-          {/* Sliding Background */}
+      <nav className="fixed top-6 left-1/2 -translate-x-1/2 z-50 pointer-events-none">
+        <div className={`pointer-events-auto relative backdrop-blur-xl rounded-2xl p-1.5 shadow-2xl overflow-hidden transition-all duration-500
+          ${mode === 'designer' 
+            ? 'bg-white/80 border border-black/5 shadow-black/5' 
+            : 'bg-white/5 border border-white/10 shadow-purple-500/10'}`}>
+          
+          {/* Animated Glow Effect */}
+          <div className={`absolute inset-0 transition-opacity duration-500 ${mode === 'creator' ? 'opacity-100' : 'opacity-0'}`}>
+            <div className="absolute inset-0 bg-gradient-to-r from-violet-600/20 via-purple-600/20 to-fuchsia-600/20 blur-xl" />
+          </div>
+          
+          {/* Sliding Pill Background */}
           <div
-            className={`absolute top-2 bottom-2 rounded-full shadow-lg transition-all duration-500 cubic-bezier(0.34, 1.56, 0.64, 1) z-0
+            className={`absolute top-1.5 bottom-1.5 rounded-xl transition-all duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)] z-0
             ${mode === 'designer'
-                ? 'left-2 w-[135px] bg-white'
-                : 'left-[138px] w-[135px] bg-gradient-to-r from-[#6366f1] to-[#a855f7]'}`}
+                ? 'left-1.5 w-[120px] bg-gradient-to-r from-slate-900 to-slate-800 shadow-lg shadow-slate-900/25'
+                : 'left-[126px] w-[120px] bg-gradient-to-r from-violet-600 via-purple-600 to-fuchsia-600 shadow-lg shadow-purple-500/40'}`}
           />
-          <div className="relative z-10 flex justify-between">
+          
+          <div className="relative z-10 flex">
             <button
               onClick={() => toggleMode('designer')}
-              className={`w-[135px] py-3 rounded-full text-xs font-bold uppercase tracking-wider transition-colors duration-300 flex items-center justify-center gap-2 interactive
-              ${mode === 'designer' ? 'text-black' : 'text-white/50 hover:text-white'}`}
+              className={`w-[120px] py-2.5 rounded-xl text-[11px] font-semibold uppercase tracking-widest transition-all duration-300 flex items-center justify-center gap-2 interactive
+              ${mode === 'designer' 
+                ? 'text-white' 
+                : mode === 'creator' 
+                  ? 'text-white/40 hover:text-white/70' 
+                  : 'text-slate-400 hover:text-slate-600'}`}
             >
-              <Monitor size={14} /> Designer
+              <Monitor size={13} strokeWidth={2.5} /> Designer
             </button>
             <button
               onClick={() => toggleMode('creator')}
-              className={`w-[135px] py-3 rounded-full text-xs font-bold uppercase tracking-wider transition-colors duration-300 flex items-center justify-center gap-2 interactive
-              ${mode === 'creator' ? 'text-white' : 'text-slate-500 hover:text-black dark:text-gray-400 dark:hover:text-white'}`}
+              className={`w-[120px] py-2.5 rounded-xl text-[11px] font-semibold uppercase tracking-widest transition-all duration-300 flex items-center justify-center gap-2 interactive
+              ${mode === 'creator' 
+                ? 'text-white' 
+                : mode === 'designer'
+                  ? 'text-slate-400 hover:text-slate-600'
+                  : 'text-white/40 hover:text-white/70'}`}
             >
-              Creator <Camera size={14} />
+              <Camera size={13} strokeWidth={2.5} /> Creator
             </button>
           </div>
         </div>

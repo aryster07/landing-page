@@ -1,4 +1,5 @@
 "use client";
+import { ChevronDown } from 'lucide-react';
 import Image from 'next/image';
 import AnimatedBackground from '@/components/ui/AnimatedBackground';
 
@@ -45,8 +46,8 @@ export function CreatorHero() {
 
                 {/* Visuals / Bitmoji */}
                 <div className="lg:col-span-5 flex flex-col items-center justify-center h-full order-1 lg:order-2 pt-12 lg:pt-0">
-                    <div className="animate-float relative -mt-40">
-                        <div className="relative w-64 h-64 md:w-80 md:h-80 mix-blend-normal flex items-center justify-center">
+                    <div className="animate-float relative mt-8 md:mt-0 lg:-mt-40">
+                        <div className="relative w-48 h-48 md:w-80 md:h-80 mix-blend-normal flex items-center justify-center">
                             <div className="absolute inset-0 bg-purple-900 rounded-full opacity-40 blur-3xl animate-pulse"></div>
                             <Image
                                 src="/images/bitmoji/bitmoji_photographer.png"
@@ -58,6 +59,12 @@ export function CreatorHero() {
                         </div>
                     </div>
                 </div>
+            </div>
+
+            {/* Scroll Indicator - PC only */}
+            <div className="hidden lg:flex absolute bottom-8 left-1/2 -translate-x-1/2 flex-col items-center gap-2 text-white/40 animate-bounce">
+                <span className="text-xs font-medium uppercase tracking-widest">Scroll</span>
+                <ChevronDown size={20} />
             </div>
         </section>
     );

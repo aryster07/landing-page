@@ -1,5 +1,5 @@
 "use client";
-import { Download } from 'lucide-react';
+import { Download, ChevronDown } from 'lucide-react';
 import Image from 'next/image';
 import AnimatedBackground from '@/components/ui/AnimatedBackground';
 
@@ -61,6 +61,12 @@ export function DesignerHero() {
                         </div>
                     </div>
                 </div>
+            </div>
+
+            {/* Scroll Indicator - PC only */}
+            <div className="hidden lg:flex absolute bottom-8 left-1/2 -translate-x-1/2 flex-col items-center gap-2 text-slate-400 animate-bounce">
+                <span className="text-xs font-medium uppercase tracking-widest">Scroll</span>
+                <ChevronDown size={20} className="" />
             </div>
         </section>
     );
