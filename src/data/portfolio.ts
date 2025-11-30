@@ -1,3 +1,4 @@
+// Types
 export interface Project {
     id: string;
     title: string;
@@ -12,8 +13,6 @@ export interface Project {
         [key: string]: any;
     };
 }
-
-// ... (keep CaseStudy interface and helpers)
 
 export interface CaseStudy {
     id: string;
@@ -46,17 +45,7 @@ export interface CaseStudy {
     results: string[];
 }
 
-// Helper function to generate Behance cover image URL from project ID
-export const getBehanceCoverImage = (projectId: string): string => {
-    return `https://mir-s3-cdn-cf.behance.net/projects/404/${projectId}.jpg`;
-};
-
-// Helper function to extract project ID from Behance URL
-export const extractBehanceProjectId = (behanceUrl: string): string => {
-    const match = behanceUrl.match(/\/gallery\/(\d+)/);
-    return match ? match[1] : '';
-};
-
+// Case Studies Data
 export const caseStudies: CaseStudy[] = [
     {
         id: 'amizone-redesign',
@@ -447,12 +436,9 @@ export const caseStudies: CaseStudy[] = [
     }
 ];
 
+// Helpers
 export const getCaseStudyById = (id: string): CaseStudy | undefined => {
     return caseStudies.find(study => study.id === id);
-};
-
-export const getAllCaseStudies = (): CaseStudy[] => {
-    return caseStudies;
 };
 
 // Map case studies to Project format for backward compatibility
@@ -467,5 +453,3 @@ export const designProjects: Project[] = caseStudies.map(study => ({
     behanceUrl: study.behanceUrl,
     images: study.images
 }));
-
-export const photographyProjects: Project[] = [];

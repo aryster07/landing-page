@@ -10,12 +10,18 @@ interface GalleryImage {
     title: string;
     description: string;
     imageUrl: string;
+    thumbnailUrl?: string;
+    previewUrl?: string;
     originalUrl: string;
     publicId: string;
     downloadUrl: string;
     width: number;
     height: number;
 }
+
+// Cache gallery data in memory - 1 hour
+const galleryCache = new Map<string, { data: any; timestamp: number }>();
+const CACHE_DURATION = 60 * 60 * 1000; // 1 hour
 
 export default function GalleryPage() {
     const params = useParams();
@@ -30,8 +36,29 @@ export default function GalleryPage() {
     useEffect(() => {
         const fetchImages = async () => {
             try {
-                const response = await fetch('/api/images');
+                // Check cache first
+                const cached = galleryCache.get('gallery-data');
+                const now = Date.now();
+                
+                if (cached && (now - cached.timestamp) < CACHE_DURATION) {
+                    console.log('Using cached gallery data');
+                    const section = cached.data.find((s: any) => s.title === category);
+                    if (section) {
+                        setImages(section.images);
+                    }
+                    setLoading(false);
+                    return;
+                }
+                
+                // Fetch fresh data
+                const response = await fetch('/api/images', {
+                    next: { revalidate: 300 } // Revalidate every 5 minutes
+                });
                 const sections = await response.json();
+                
+                // Update cache
+                galleryCache.set('gallery-data', { data: sections, timestamp: now });
+                
                 const section = sections.find((s: any) => s.title === category);
                 if (section) {
                     setImages(section.images);
@@ -129,11 +156,11 @@ export default function GalleryPage() {
             <header className="sticky top-0 z-40 bg-[#050505]/80 backdrop-blur-xl border-b border-white/10">
                 <div className="max-w-[1400px] mx-auto px-6 py-6 flex items-center justify-between">
                     <a
-                        href="/#creator"
+                        href="/?mode=creator#work"
                         className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors"
                     >
                         <ArrowLeft size={20} />
-                        <span className="font-medium">Back to Portfolio</span>
+                        <span className="font-medium">Back to Gallery</span>
                     </a>
                     <div className="text-sm text-gray-500">
                         {images.length} {images.length === 1 ? 'photo' : 'photos'}
@@ -152,8 +179,10 @@ export default function GalleryPage() {
             {/* Image Grid */}
             <div className="max-w-[1400px] mx-auto px-6 pb-20">
                 {loading ? (
-                    <div className="text-center py-20 text-gray-500">
-                        <p>Loading gallery...</p>
+                    <div className="columns-2 md:columns-3 lg:columns-4 gap-2 md:gap-3">
+                        {[...Array(12)].map((_, i) => (
+                            <div key={i} className="bg-neutral-800 rounded-md mb-2 md:mb-3 animate-pulse" style={{ height: `${150 + Math.random() * 100}px` }} />
+                        ))}
                     </div>
                 ) : images.length === 0 ? (
                     <div className="text-center py-20 text-gray-500">
@@ -170,15 +199,12 @@ export default function GalleryPage() {
                                     className="group relative overflow-hidden rounded-md cursor-pointer bg-neutral-900 border border-neutral-800 hover:border-amber-500/50 transition-all duration-300 mb-2 md:mb-3 break-inside-avoid"
                                     onClick={() => openLightbox(image, index)}
                                 >
-                                    <Image
+                                    <img
                                         src={image.imageUrl}
                                         alt={image.title}
-                                        width={image.width}
-                                        height={image.height}
                                         className="w-full h-auto object-cover transition-transform duration-500 group-hover:scale-110"
-                                        loading={index < 6 ? "eager" : "lazy"}
-                                        unoptimized={true}
-                                        sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
+                                        loading={index < 4 ? "eager" : "lazy"}
+                                        decoding="async"
                                     />
                                     <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/0 to-black/0 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
@@ -233,9 +259,10 @@ export default function GalleryPage() {
                     {/* Image */}
                     <div className="relative max-w-[90vw] max-h-[90vh] flex items-center justify-center">
                         <img
-                            src={selectedImage.originalUrl}
+                            src={selectedImage.previewUrl || selectedImage.originalUrl}
                             alt={selectedImage.title}
                             className="max-w-full max-h-[90vh] object-contain"
+                            loading="eager"
                         />
                     </div>
 

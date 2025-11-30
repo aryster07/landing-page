@@ -3,12 +3,9 @@
 import React, { useState, useEffect } from 'react';
 import { Monitor, Camera } from 'lucide-react';
 import { designProjects } from '@/data/portfolio';
-import { Hero } from '@/components/sections/Hero';
-import { Skills } from '@/components/sections/Skills';
-import { Projects } from '@/components/sections/Projects';
-import { Footer } from '@/components/sections/Footer';
-import { Contact } from '@/components/sections/Contact';
-import { CustomCursor } from '@/components/ui/CustomCursor';
+import { Contact, CustomCursor } from '@/components';
+import { DesignerHero, DesignerSkills, DesignerProjects, DesignerFooter } from '@/components/designer';
+import { CreatorHero, CreatorProjects, CreatorFooter } from '@/components/creator';
 import { useScrollReveal } from '@/hooks/useScrollReveal';
 
 type Mode = 'designer' | 'creator';
@@ -19,6 +16,28 @@ export default function Portfolio() {
   const [photographySections, setPhotographySections] = useState<{ title: string; images: any[] }[]>([]);
 
   useScrollReveal();
+
+  // Check URL hash and query params on load to set correct mode
+  useEffect(() => {
+    const hash = window.location.hash;
+    const params = new URLSearchParams(window.location.search);
+    const modeParam = params.get('mode');
+    
+    // Set creator mode if specified in URL
+    if (modeParam === 'creator' || hash === '#creator' || hash.startsWith('#creator')) {
+      setMode('creator');
+      
+      // Scroll to work section if hash is #work
+      if (hash === '#work') {
+        setTimeout(() => {
+          const workSection = document.getElementById('work');
+          if (workSection) {
+            workSection.scrollIntoView({ behavior: 'smooth' });
+          }
+        }, 100);
+      }
+    }
+  }, []);
 
   useEffect(() => {
     const loadPhotographyProjects = async () => {
@@ -97,11 +116,22 @@ export default function Portfolio() {
 
       {/* --- PAGE CONTENT --- */}
       <main className={`transition-all duration-700 ease-out ${isTransitioning ? 'opacity-0 blur-lg scale-95' : 'opacity-100 blur-0 scale-100'}`}>
-        <Hero mode={mode} />
-        <Skills mode={mode} />
-        <Projects mode={mode} projects={designProjects} photographySections={photographySections} />
-        <Contact />
-        <Footer mode={mode} />
+        {mode === 'designer' ? (
+          <>
+            <DesignerHero />
+            <DesignerSkills />
+            <DesignerProjects projects={designProjects} />
+            <Contact />
+            <DesignerFooter />
+          </>
+        ) : (
+          <>
+            <CreatorHero />
+            <CreatorProjects photographySections={photographySections} />
+            <Contact />
+            <CreatorFooter />
+          </>
+        )}
       </main>
     </div>
   );
