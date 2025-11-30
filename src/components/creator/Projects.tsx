@@ -1,10 +1,10 @@
 "use client";
 import { Layers } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 interface GallerySection {
     title: string;
-    images: { coverUrl?: string; imageUrl?: string }[];
+    images: { coverUrl?: string; imageUrl?: string; placeholderUrl?: string; thumbnailUrl?: string }[];
 }
 
 interface CreatorProjectsProps {
@@ -13,17 +13,60 @@ interface CreatorProjectsProps {
 
 function GalleryCard({ section, index }: { section: GallerySection; index: number }) {
     const [imageLoaded, setImageLoaded] = useState(false);
+    const [imageSrc, setImageSrc] = useState<string>('');
+    const cardRef = useRef<HTMLAnchorElement>(null);
     const firstImage = section.images[0];
     const coverUrl = firstImage.coverUrl || firstImage.imageUrl || '';
+    const placeholderUrl = firstImage.placeholderUrl || firstImage.thumbnailUrl || '';
+
+    // Lazy load with intersection observer
+    useEffect(() => {
+        if (index < 4) {
+            // Load first 4 images immediately
+            setImageSrc(coverUrl);
+            return;
+        }
+
+        const observer = new IntersectionObserver(
+            (entries) => {
+                entries.forEach((entry) => {
+                    if (entry.isIntersecting) {
+                        setImageSrc(coverUrl);
+                        observer.disconnect();
+                    }
+                });
+            },
+            { rootMargin: '200px' }
+        );
+
+        if (cardRef.current) {
+            observer.observe(cardRef.current);
+        }
+
+        return () => observer.disconnect();
+    }, [coverUrl, index]);
 
     return (
         <a
+            ref={cardRef}
             href={`/gallery/${section.title}`}
             className="group relative overflow-hidden rounded-xl interactive w-full cursor-pointer bg-neutral-900 border border-neutral-800 hover:border-amber-500/50 transition-all duration-300"
             style={{ aspectRatio: '4/5' }}
         >
-            {/* Loading Skeleton */}
-            {!imageLoaded && (
+            {/* Low quality placeholder */}
+            {placeholderUrl && !imageLoaded && (
+                <div className="absolute inset-0">
+                    <img 
+                        src={placeholderUrl}
+                        alt=""
+                        className="w-full h-full object-cover blur-lg scale-110"
+                        aria-hidden="true"
+                    />
+                </div>
+            )}
+
+            {/* Loading Skeleton - only show if no placeholder */}
+            {!imageLoaded && !placeholderUrl && (
                 <div className="absolute inset-0 bg-neutral-800 animate-pulse">
                     <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
                     <div className="absolute bottom-4 left-4 right-4 space-y-2">
@@ -35,14 +78,15 @@ function GalleryCard({ section, index }: { section: GallerySection; index: numbe
 
             {/* Background Image */}
             <div className="absolute inset-0 overflow-hidden">
-                <img 
-                    src={coverUrl}
-                    alt={section.title}
-                    className={`w-full h-full object-cover transition-all duration-700 ease-out group-hover:scale-105 ${imageLoaded ? 'opacity-100' : 'opacity-0'}`}
-                    loading={index < 4 ? "eager" : "lazy"}
-                    decoding="async"
-                    onLoad={() => setImageLoaded(true)}
-                />
+                {imageSrc && (
+                    <img 
+                        src={imageSrc}
+                        alt={section.title}
+                        className={`w-full h-full object-cover transition-all duration-500 ease-out group-hover:scale-105 ${imageLoaded ? 'opacity-100 blur-0' : 'opacity-0'}`}
+                        decoding="async"
+                        onLoad={() => setImageLoaded(true)}
+                    />
+                )}
                 <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-black/20 group-hover:from-black/90 transition-all duration-300"></div>
             </div>
 

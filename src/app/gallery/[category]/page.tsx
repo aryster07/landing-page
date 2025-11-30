@@ -1,9 +1,8 @@
 "use client";
 
 import { useParams, useRouter } from 'next/navigation';
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef, useCallback } from 'react';
 import { ArrowLeft, Download, X } from 'lucide-react';
-import Image from 'next/image';
 
 interface GalleryImage {
     id: number;
@@ -12,6 +11,7 @@ interface GalleryImage {
     imageUrl: string;
     thumbnailUrl?: string;
     previewUrl?: string;
+    placeholderUrl?: string;
     originalUrl: string;
     publicId: string;
     downloadUrl: string;
@@ -23,6 +23,82 @@ interface GalleryImage {
 const galleryCache = new Map<string, { data: any; timestamp: number }>();
 const CACHE_DURATION = 60 * 60 * 1000; // 1 hour
 
+// Sequential Image Component - loads images one by one from top to bottom
+function SequentialImage({ 
+    src, 
+    placeholder, 
+    alt, 
+    className, 
+    index,
+    loadedCount,
+    onLoad,
+    onClick 
+}: { 
+    src: string; 
+    placeholder?: string; 
+    alt: string; 
+    className?: string; 
+    index: number;
+    loadedCount: number;
+    onLoad: () => void;
+    onClick?: () => void;
+}) {
+    const [loaded, setLoaded] = useState(false);
+    const [shouldLoad, setShouldLoad] = useState(false);
+    const imgRef = useRef<HTMLImageElement>(null);
+
+    // Sequential loading: only start loading when previous images are done
+    // Load first 2 images immediately, then load sequentially
+    useEffect(() => {
+        if (index < 2) {
+            setShouldLoad(true);
+        } else if (loadedCount >= index - 1) {
+            // Start loading this image when the previous one is loaded
+            setShouldLoad(true);
+        }
+    }, [index, loadedCount]);
+
+    useEffect(() => {
+        if (shouldLoad && !loaded) {
+            const img = new Image();
+            img.onload = () => {
+                setLoaded(true);
+                onLoad();
+            };
+            img.src = src;
+        }
+    }, [shouldLoad, src, loaded, onLoad]);
+
+    return (
+        <div className="relative w-full h-full">
+            {/* Placeholder */}
+            {placeholder && !loaded && (
+                <img
+                    src={placeholder}
+                    alt=""
+                    className={`${className} blur-lg scale-105`}
+                    aria-hidden="true"
+                />
+            )}
+            {/* Loading skeleton if no placeholder */}
+            {!placeholder && !loaded && (
+                <div className="w-full h-full bg-neutral-800 animate-pulse" />
+            )}
+            {/* Main image */}
+            {shouldLoad && (
+                <img
+                    ref={imgRef}
+                    src={src}
+                    alt={alt}
+                    className={`${className} transition-all duration-500 ${loaded ? 'opacity-100 blur-0' : 'opacity-0 absolute inset-0'}`}
+                    onClick={onClick}
+                    decoding="async"
+                />
+            )}
+        </div>
+    );
+}
+
 export default function GalleryPage() {
     const params = useParams();
     const router = useRouter();
@@ -31,6 +107,7 @@ export default function GalleryPage() {
     const [loading, setLoading] = useState(true);
     const [selectedImage, setSelectedImage] = useState<GalleryImage | null>(null);
     const [lightboxIndex, setLightboxIndex] = useState(0);
+    const [loadedCount, setLoadedCount] = useState(0);
     const lightboxRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
@@ -72,6 +149,15 @@ export default function GalleryPage() {
         fetchImages();
     }, [category]);
 
+    // Reset loaded count when images change
+    useEffect(() => {
+        setLoadedCount(0);
+    }, [images]);
+
+    const handleImageLoad = useCallback(() => {
+        setLoadedCount(prev => prev + 1);
+    }, []);
+
     const openLightbox = (image: GalleryImage, index: number) => {
         setSelectedImage(image);
         setLightboxIndex(index);
@@ -81,17 +167,17 @@ export default function GalleryPage() {
         setSelectedImage(null);
     };
 
-    const nextImage = () => {
+    const nextImage = useCallback(() => {
         const newIndex = (lightboxIndex + 1) % images.length;
         setLightboxIndex(newIndex);
         setSelectedImage(images[newIndex]);
-    };
+    }, [lightboxIndex, images]);
 
-    const prevImage = () => {
+    const prevImage = useCallback(() => {
         const newIndex = (lightboxIndex - 1 + images.length) % images.length;
         setLightboxIndex(newIndex);
         setSelectedImage(images[newIndex]);
-    };
+    }, [lightboxIndex, images]);
 
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
@@ -102,7 +188,7 @@ export default function GalleryPage() {
         };
         window.addEventListener('keydown', handleKeyDown);
         return () => window.removeEventListener('keydown', handleKeyDown);
-    }, [selectedImage, lightboxIndex]);
+    }, [selectedImage, nextImage, prevImage]);
 
     // Swipe gesture for lightbox
     useEffect(() => {
@@ -148,7 +234,7 @@ export default function GalleryPage() {
             element.removeEventListener('touchstart', handleTouchStart);
             element.removeEventListener('touchend', handleTouchEnd);
         };
-    }, [selectedImage, lightboxIndex]);
+    }, [selectedImage, nextImage, prevImage]);
 
     return (
         <div className="min-h-screen bg-[#050505] text-white">
@@ -163,7 +249,7 @@ export default function GalleryPage() {
                         <span className="font-medium">Back to Gallery</span>
                     </a>
                     <div className="text-sm text-gray-500">
-                        {images.length} {images.length === 1 ? 'photo' : 'photos'}
+                        {loadedCount} / {images.length} {images.length === 1 ? 'photo' : 'photos'} loaded
                     </div>
                 </div>
             </header>
@@ -176,12 +262,12 @@ export default function GalleryPage() {
                 <p className="text-gray-400 text-lg">A curated collection of {category.toLowerCase()} photography</p>
             </div>
 
-            {/* Image Grid */}
+            {/* Image Grid - Using grid instead of columns for top-to-bottom loading */}
             <div className="max-w-[1400px] mx-auto px-6 pb-20">
                 {loading ? (
-                    <div className="columns-2 md:columns-3 lg:columns-4 gap-2 md:gap-3">
+                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 md:gap-3">
                         {[...Array(12)].map((_, i) => (
-                            <div key={i} className="bg-neutral-800 rounded-md mb-2 md:mb-3 animate-pulse" style={{ height: `${150 + Math.random() * 100}px` }} />
+                            <div key={i} className="bg-neutral-800 rounded-md animate-pulse aspect-square" />
                         ))}
                     </div>
                 ) : images.length === 0 ? (
@@ -189,31 +275,36 @@ export default function GalleryPage() {
                         <p>No images found in this gallery.</p>
                     </div>
                 ) : (
-                    <div className="columns-2 md:columns-3 lg:columns-4 gap-2 md:gap-3">
+                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 md:gap-3">
                         {images.map((image, index) => {
-                            const isLandscape = image.width > image.height;
-
                             return (
                                 <div
                                     key={image.id}
-                                    className="group relative overflow-hidden rounded-md cursor-pointer bg-neutral-900 border border-neutral-800 hover:border-amber-500/50 transition-all duration-300 mb-2 md:mb-3 break-inside-avoid"
+                                    className="group relative overflow-hidden rounded-md cursor-pointer bg-neutral-900 border border-neutral-800 hover:border-amber-500/50 transition-all duration-300 aspect-square"
                                     onClick={() => openLightbox(image, index)}
                                 >
-                                    <img
+                                    <SequentialImage
                                         src={image.imageUrl}
+                                        placeholder={image.placeholderUrl || image.thumbnailUrl}
                                         alt={image.title}
-                                        className="w-full h-auto object-cover transition-transform duration-500 group-hover:scale-110"
-                                        loading={index < 4 ? "eager" : "lazy"}
-                                        decoding="async"
+                                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                                        index={index}
+                                        loadedCount={loadedCount}
+                                        onLoad={handleImageLoad}
                                     />
                                     <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/0 to-black/0 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-
                                     {/* Download Icon */}
                                     <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                                         <div className="bg-amber-500/90 backdrop-blur-sm rounded-full p-2">
                                             <Download size={16} className="text-white" />
                                         </div>
                                     </div>
+                                    {/* Loading indicator */}
+                                    {index >= loadedCount && index > 1 && (
+                                        <div className="absolute bottom-2 left-2 text-xs text-gray-500">
+                                            #{index + 1}
+                                        </div>
+                                    )}
                                 </div>
                             );
                         })}
@@ -262,7 +353,6 @@ export default function GalleryPage() {
                             src={selectedImage.previewUrl || selectedImage.originalUrl}
                             alt={selectedImage.title}
                             className="max-w-full max-h-[90vh] object-contain"
-                            loading="eager"
                         />
                     </div>
 

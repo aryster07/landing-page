@@ -15,7 +15,7 @@ export const CLOUDINARY_BASE_URL = `https://res.cloudinary.com/${process.env.CLO
 // Gallery folder categories (sorted alphabetically for consistent order)
 export const GALLERY_FOLDERS = ['Astro', 'Bikes', 'Cars', 'Drones', 'Lambo', 'moon', 'Mountains', 'Nature', 'skies', 'Sunsets'];
 
-// Image URL builders
+// Image URL builders with optimized quality (reduced by 20% from 100 to 80)
 const buildImageUrl = (publicId: string, transforms: string) => 
     `${CLOUDINARY_BASE_URL}/${transforms}/${publicId}`;
 
@@ -60,10 +60,13 @@ export async function getFolderImages(folderName: string) {
                 id: index + 1,
                 title: `${folderName.charAt(0).toUpperCase() + folderName.slice(1)} Photo ${index + 1}`,
                 description: `A photograph from the ${folderName} collection`,
-                imageUrl: buildImageUrl(publicId, 'w_800,c_fill,g_auto,q_100,f_auto'),
-                thumbnailUrl: buildImageUrl(publicId, 'w_100,c_fill,g_auto,q_50,f_auto'),
-                previewUrl: buildImageUrl(publicId, 'w_2000,c_fill,g_auto,q_100,f_auto'),
-                coverUrl: buildImageUrl(publicId, 'w_600,h_750,c_fill,g_auto,q_100,f_auto'),
+                // Optimized: reduced quality to 80%, using webp format, added blur placeholder
+                imageUrl: buildImageUrl(publicId, 'w_800,c_fill,g_auto,q_80,f_webp'),
+                thumbnailUrl: buildImageUrl(publicId, 'w_50,c_fill,g_auto,q_30,f_webp,e_blur:100'),
+                previewUrl: buildImageUrl(publicId, 'w_1600,c_limit,g_auto,q_80,f_webp'),
+                coverUrl: buildImageUrl(publicId, 'w_600,h_750,c_fill,g_auto,q_80,f_webp'),
+                // Low quality placeholder for blur-up effect
+                placeholderUrl: buildImageUrl(publicId, 'w_20,c_fill,g_auto,q_10,f_webp,e_blur:1000'),
                 originalUrl: resource.secure_url,
                 downloadUrl: buildImageUrl(publicId, 'fl_attachment,q_100'),
                 publicId,
