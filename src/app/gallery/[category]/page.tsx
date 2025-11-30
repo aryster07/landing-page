@@ -1,8 +1,8 @@
 "use client";
 
-import { useParams, useRouter } from 'next/navigation';
+import { useParams } from 'next/navigation';
 import { useEffect, useState, useRef, useCallback } from 'react';
-import { ArrowLeft, Download, X } from 'lucide-react';
+import { ArrowLeft, Download } from 'lucide-react';
 
 interface GalleryImage {
     id: number;
@@ -31,8 +31,7 @@ function SequentialImage({
     className, 
     index,
     loadedCount,
-    onLoad,
-    onClick 
+    onLoad
 }: { 
     src: string; 
     placeholder?: string; 
@@ -41,11 +40,9 @@ function SequentialImage({
     index: number;
     loadedCount: number;
     onLoad: () => void;
-    onClick?: () => void;
 }) {
     const [loaded, setLoaded] = useState(false);
     const [shouldLoad, setShouldLoad] = useState(false);
-    const imgRef = useRef<HTMLImageElement>(null);
 
     // Sequential loading: only start loading when previous images are done
     // Load first 2 images immediately, then load sequentially
@@ -70,45 +67,39 @@ function SequentialImage({
     }, [shouldLoad, src, loaded, onLoad]);
 
     return (
-        <div className="relative w-full h-full">
-            {/* Placeholder */}
+        <>
+            {/* Placeholder - absolutely positioned so it doesn't affect layout */}
             {placeholder && !loaded && (
                 <img
                     src={placeholder}
                     alt=""
-                    className={`${className} blur-lg scale-105`}
+                    className={`${className} absolute inset-0 blur-lg scale-105`}
                     aria-hidden="true"
                 />
             )}
             {/* Loading skeleton if no placeholder */}
             {!placeholder && !loaded && (
-                <div className="w-full h-full bg-neutral-800 animate-pulse" />
+                <div className="absolute inset-0 bg-neutral-800 animate-pulse" />
             )}
-            {/* Main image */}
+            {/* Main image - absolutely positioned to prevent layout shift */}
             {shouldLoad && (
                 <img
-                    ref={imgRef}
                     src={src}
                     alt={alt}
-                    className={`${className} transition-all duration-500 ${loaded ? 'opacity-100 blur-0' : 'opacity-0 absolute inset-0'}`}
-                    onClick={onClick}
+                    className={`${className} absolute inset-0 transition-opacity duration-500 ${loaded ? 'opacity-100' : 'opacity-0'}`}
                     decoding="async"
                 />
             )}
-        </div>
+        </>
     );
 }
 
 export default function GalleryPage() {
     const params = useParams();
-    const router = useRouter();
     const category = params.category as string;
     const [images, setImages] = useState<GalleryImage[]>([]);
     const [loading, setLoading] = useState(true);
-    const [selectedImage, setSelectedImage] = useState<GalleryImage | null>(null);
-    const [lightboxIndex, setLightboxIndex] = useState(0);
     const [loadedCount, setLoadedCount] = useState(0);
-    const lightboxRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
         const fetchImages = async () => {
@@ -158,84 +149,6 @@ export default function GalleryPage() {
         setLoadedCount(prev => prev + 1);
     }, []);
 
-    const openLightbox = (image: GalleryImage, index: number) => {
-        setSelectedImage(image);
-        setLightboxIndex(index);
-    };
-
-    const closeLightbox = () => {
-        setSelectedImage(null);
-    };
-
-    const nextImage = useCallback(() => {
-        const newIndex = (lightboxIndex + 1) % images.length;
-        setLightboxIndex(newIndex);
-        setSelectedImage(images[newIndex]);
-    }, [lightboxIndex, images]);
-
-    const prevImage = useCallback(() => {
-        const newIndex = (lightboxIndex - 1 + images.length) % images.length;
-        setLightboxIndex(newIndex);
-        setSelectedImage(images[newIndex]);
-    }, [lightboxIndex, images]);
-
-    useEffect(() => {
-        const handleKeyDown = (e: KeyboardEvent) => {
-            if (!selectedImage) return;
-            if (e.key === 'Escape') closeLightbox();
-            if (e.key === 'ArrowRight') nextImage();
-            if (e.key === 'ArrowLeft') prevImage();
-        };
-        window.addEventListener('keydown', handleKeyDown);
-        return () => window.removeEventListener('keydown', handleKeyDown);
-    }, [selectedImage, nextImage, prevImage]);
-
-    // Swipe gesture for lightbox
-    useEffect(() => {
-        const element = lightboxRef.current;
-        if (!element || !selectedImage) return;
-
-        let touchStartX = 0;
-        let touchEndX = 0;
-        let touchStartY = 0;
-        let touchEndY = 0;
-
-        const handleTouchStart = (e: TouchEvent) => {
-            touchStartX = e.changedTouches[0].screenX;
-            touchStartY = e.changedTouches[0].screenY;
-        };
-
-        const handleTouchEnd = (e: TouchEvent) => {
-            touchEndX = e.changedTouches[0].screenX;
-            touchEndY = e.changedTouches[0].screenY;
-            handleSwipe();
-        };
-
-        const handleSwipe = () => {
-            const swipeThreshold = 50;
-            const horizontalSwipe = Math.abs(touchEndX - touchStartX);
-            const verticalSwipe = Math.abs(touchEndY - touchStartY);
-
-            // Horizontal swipe (next/prev image)
-            if (horizontalSwipe > verticalSwipe && horizontalSwipe > swipeThreshold) {
-                if (touchEndX < touchStartX) nextImage();
-                if (touchEndX > touchStartX) prevImage();
-            }
-            // Vertical swipe down (close lightbox)
-            else if (verticalSwipe > swipeThreshold && touchEndY > touchStartY) {
-                closeLightbox();
-            }
-        };
-
-        element.addEventListener('touchstart', handleTouchStart);
-        element.addEventListener('touchend', handleTouchEnd);
-
-        return () => {
-            element.removeEventListener('touchstart', handleTouchStart);
-            element.removeEventListener('touchend', handleTouchEnd);
-        };
-    }, [selectedImage, nextImage, prevImage]);
-
     return (
         <div className="min-h-screen bg-[#050505] text-white">
             {/* Header */}
@@ -249,7 +162,7 @@ export default function GalleryPage() {
                         <span className="font-medium">Back to Gallery</span>
                     </a>
                     <div className="text-sm text-gray-500">
-                        {loadedCount} / {images.length} {images.length === 1 ? 'photo' : 'photos'} loaded
+                        {images.length} {images.length === 1 ? 'photo' : 'photos'}
                     </div>
                 </div>
             </header>
@@ -262,12 +175,12 @@ export default function GalleryPage() {
                 <p className="text-gray-400 text-lg">A curated collection of {category.toLowerCase()} photography</p>
             </div>
 
-            {/* Image Grid - Using grid instead of columns for top-to-bottom loading */}
+            {/* Masonry Grid Gallery */}
             <div className="max-w-[1400px] mx-auto px-6 pb-20">
                 {loading ? (
-                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 md:gap-3">
+                    <div className="columns-2 md:columns-3 lg:columns-4 gap-2 md:gap-3">
                         {[...Array(12)].map((_, i) => (
-                            <div key={i} className="bg-neutral-800 rounded-md animate-pulse aspect-square" />
+                            <div key={i} className="bg-neutral-800 rounded-md animate-pulse aspect-[4/5] mb-2 md:mb-3 break-inside-avoid" />
                         ))}
                     </div>
                 ) : images.length === 0 ? (
@@ -275,96 +188,49 @@ export default function GalleryPage() {
                         <p>No images found in this gallery.</p>
                     </div>
                 ) : (
-                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 md:gap-3">
+                    <div className="columns-2 md:columns-3 lg:columns-4 gap-2 md:gap-3">
                         {images.map((image, index) => {
+                            // Determine Instagram aspect ratio based on image dimensions
+                            const aspectRatio = image.width / image.height;
+                            // Landscape: 1.91:1, Portrait: 4:5, Square: 1:1
+                            const getAspectClass = () => {
+                                if (aspectRatio > 1.2) return 'aspect-[1.91/1]'; // Landscape
+                                if (aspectRatio < 0.9) return 'aspect-[4/5]';    // Portrait
+                                return 'aspect-square';                           // Square
+                            };
+                            
                             return (
                                 <div
                                     key={image.id}
-                                    className="group relative overflow-hidden rounded-md cursor-pointer bg-neutral-900 border border-neutral-800 hover:border-amber-500/50 transition-all duration-300 aspect-square"
-                                    onClick={() => openLightbox(image, index)}
+                                    className={`group relative overflow-hidden rounded-md bg-neutral-900 border border-neutral-800 hover:border-amber-500/50 transition-all duration-300 mb-2 md:mb-3 break-inside-avoid ${getAspectClass()}`}
                                 >
                                     <SequentialImage
                                         src={image.imageUrl}
                                         placeholder={image.placeholderUrl || image.thumbnailUrl}
                                         alt={image.title}
-                                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                                         index={index}
                                         loadedCount={loadedCount}
                                         onLoad={handleImageLoad}
                                     />
-                                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/0 to-black/0 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                                    <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
                                     {/* Download Icon */}
-                                    <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                                        <div className="bg-amber-500/90 backdrop-blur-sm rounded-full p-2">
+                                    <a
+                                        href={image.downloadUrl}
+                                        download
+                                        className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                                        onClick={(e) => e.stopPropagation()}
+                                    >
+                                        <div className="bg-amber-500/90 backdrop-blur-sm rounded-full p-2 hover:bg-amber-400 transition-colors">
                                             <Download size={16} className="text-white" />
                                         </div>
-                                    </div>
-                                    {/* Loading indicator */}
-                                    {index >= loadedCount && index > 1 && (
-                                        <div className="absolute bottom-2 left-2 text-xs text-gray-500">
-                                            #{index + 1}
-                                        </div>
-                                    )}
+                                    </a>
                                 </div>
                             );
                         })}
                     </div>
                 )}
             </div>
-
-            {/* Lightbox */}
-            {selectedImage && (
-                <div ref={lightboxRef} className="fixed inset-0 z-50 bg-black/95 flex items-center justify-center">
-                    {/* Close Button */}
-                    <button
-                        onClick={closeLightbox}
-                        className="absolute top-6 right-6 z-50 p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors"
-                    >
-                        <X size={24} />
-                    </button>
-
-                    {/* Download Button */}
-                    <a
-                        href={selectedImage.downloadUrl}
-                        download
-                        className="absolute top-6 right-20 z-50 p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors"
-                        onClick={(e) => e.stopPropagation()}
-                    >
-                        <Download size={24} />
-                    </a>
-
-                    {/* Navigation Buttons */}
-                    <button
-                        onClick={prevImage}
-                        className="absolute left-6 z-50 p-3 rounded-full bg-white/10 hover:bg-white/20 transition-colors"
-                    >
-                        <ArrowLeft size={24} />
-                    </button>
-                    <button
-                        onClick={nextImage}
-                        className="absolute right-6 z-50 p-3 rounded-full bg-white/10 hover:bg-white/20 transition-colors"
-                    >
-                        <ArrowLeft size={24} className="rotate-180" />
-                    </button>
-
-                    {/* Image */}
-                    <div className="relative max-w-[90vw] max-h-[90vh] flex items-center justify-center">
-                        <img
-                            src={selectedImage.previewUrl || selectedImage.originalUrl}
-                            alt={selectedImage.title}
-                            className="max-w-full max-h-[90vh] object-contain"
-                        />
-                    </div>
-
-                    {/* Image Info */}
-                    <div className="absolute bottom-6 left-1/2 -translate-x-1/2 text-center">
-                        <p className="text-white font-medium mb-1">{selectedImage.title}</p>
-                        <p className="text-gray-400 text-sm">
-                            {lightboxIndex + 1} / {images.length}
-                        </p>
-                    </div>
-                </div>
-            )}
         </div>
     );
 }
